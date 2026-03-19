@@ -768,6 +768,7 @@ body.performance-mode .bento-grid:hover {
                 box-shadow 0.5s ease;
     transform-style: preserve-3d;
     isolation: isolate;
+    pointer-events: auto;
 }
 
 .bento-item:hover {
@@ -856,12 +857,14 @@ body.performance-mode .bento-item:hover .bento-media video {
     flex-direction: column;
     justify-content: flex-end;
     padding: 24px;
-    opacity: 0.06;
+    opacity: 0;
     transition: opacity 0.35s ease;
     pointer-events: none;
+    z-index: 2;
 }
 
-.bento-item:hover .bento-overlay {
+.bento-item:hover .bento-overlay,
+.bento-item:focus .bento-overlay {
     opacity: 1;
 }
 
@@ -873,7 +876,9 @@ body.performance-mode .bento-item:hover .bento-media video {
 }
 
 .bento-item:hover .bento-overlay .bento-cat,
-.bento-item:hover .bento-overlay h3 {
+.bento-item:hover .bento-overlay h3,
+.bento-item:focus .bento-overlay .bento-cat,
+.bento-item:focus .bento-overlay h3 {
     transform: translateY(0);
     opacity: 1;
 }

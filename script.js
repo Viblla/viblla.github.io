@@ -154,6 +154,12 @@ document.addEventListener('DOMContentLoaded', () => {
     const bentoGrid = document.getElementById('bento-grid');
     const bentoWrapper = document.querySelector('.bento-wrapper');
 
+    // DEBUG: Log all bento items found and verify they're clickable
+    console.log(`✓ Found ${bentoItems.length} bento items`);
+    bentoItems.forEach((item, idx) => {
+        console.log(`  ${idx + 1}. ${item.getAttribute('data-title')} (${item.getAttribute('data-category')})`);
+    });
+
     // --- Auto-detect video aspect ratio and assign grid size ---
     bentoItems.forEach(item => {
         const video = item.querySelector('video');
@@ -448,11 +454,18 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function openPanel(item) {
-        if (!videoPanel || !panelBackdrop || !panelVideoWrap || !panelInfo) return;
+        if (!videoPanel || !panelBackdrop || !panelVideoWrap || !panelInfo) {
+            console.error('Panel DOM elements not found', { videoPanel, panelBackdrop, panelVideoWrap, panelInfo });
+            return;
+        }
         const title = item.getAttribute('data-title');
         const tags = item.getAttribute('data-tags');
         const video = item.querySelector('video');
         const driveLink = item.getAttribute('data-drive-link');
+
+        console.log(`openPanel() called for: ${title}`);
+        console.log(`  Video src: ${video ? video.src : 'NOT FOUND'}`);
+        console.log(`  Drive link: ${driveLink || 'NONE'}`);
 
         // Set info
         panelInfo.querySelector('.panel-tags').textContent = tags;
@@ -499,6 +512,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.style.overflow = 'hidden';
         pauseAllVideos();
         duckWebsiteMusic();
+        console.log(`  ✓ Panel opened`);
     }
 
     function closePanel() {
@@ -532,8 +546,17 @@ document.addEventListener('DOMContentLoaded', () => {
         item.setAttribute('aria-label', `Open preview for ${item.getAttribute('data-title') || 'project'}`);
 
         item.addEventListener('click', (e) => {
-            if (item.classList.contains('filtered-out')) return;
+            const title = item.getAttribute('data-title');
+            const isFiltered = item.classList.contains('filtered-out');
+            console.log(`Click on: ${title}, Filtered: ${isFiltered}`);
+            
+            if (isFiltered) {
+                console.warn(`  → Skipped (filtered out)`);
+                return;
+            }
+            
             e.stopPropagation();
+            console.log(`  → Opening panel for: ${title}`);
             openPanel(item);
         });
 
