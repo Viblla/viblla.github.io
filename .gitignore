@@ -1,2 +1,5 @@
 # Local Netlify folder
 .netlify
+
+# Temporary npm cache used for local CLI runs
+.npm-cache

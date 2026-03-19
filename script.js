@@ -5,6 +5,15 @@
 
 document.addEventListener('DOMContentLoaded', () => {
 
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const supportsHover = window.matchMedia('(hover: hover)').matches;
+    const isLowPowerDevice = typeof navigator.hardwareConcurrency === 'number' && navigator.hardwareConcurrency <= 4;
+    const performanceMode = prefersReducedMotion || isLowPowerDevice;
+
+    if (performanceMode) {
+        document.body.classList.add('performance-mode');
+    }
+
     // === Loader ===
     const loader = document.getElementById('loader');
     setTimeout(() => {
@@ -19,45 +28,41 @@ document.addEventListener('DOMContentLoaded', () => {
     let mouseX = 0, mouseY = 0;
     let followerX = 0, followerY = 0;
 
-    document.addEventListener('mousemove', (e) => {
-        mouseX = e.clientX;
-        mouseY = e.clientY;
-        cursor.style.left = mouseX - 6 + 'px';
-        cursor.style.top = mouseY - 6 + 'px';
-    });
+    if (cursor && follower && supportsHover && !performanceMode) {
+        document.addEventListener('mousemove', (e) => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            cursor.style.left = mouseX - 6 + 'px';
+            cursor.style.top = mouseY - 6 + 'px';
+        }, { passive: true });
 
-    function animateFollower() {
-        followerX += (mouseX - followerX) * 0.12;
-        followerY += (mouseY - followerY) * 0.12;
-        follower.style.left = followerX - 20 + 'px';
-        follower.style.top = followerY - 20 + 'px';
-        requestAnimationFrame(animateFollower);
+        function animateFollower() {
+            followerX += (mouseX - followerX) * 0.12;
+            followerY += (mouseY - followerY) * 0.12;
+            follower.style.left = followerX - 20 + 'px';
+            follower.style.top = followerY - 20 + 'px';
+            requestAnimationFrame(animateFollower);
+        }
+        animateFollower();
     }
-    animateFollower();
 
     // Cursor hover targets
     const hoverTargets = document.querySelectorAll('a, button, .bento-item, .about-card, .arsenal-category, .timeline-item, .contact-card, .panel-close');
-    hoverTargets.forEach(el => {
-        el.addEventListener('mouseenter', () => {
-            cursor.classList.add('hover');
-            follower.classList.add('hover');
+    if (cursor && follower && supportsHover && !performanceMode) {
+        hoverTargets.forEach(el => {
+            el.addEventListener('mouseenter', () => {
+                cursor.classList.add('hover');
+                follower.classList.add('hover');
+            });
+            el.addEventListener('mouseleave', () => {
+                cursor.classList.remove('hover');
+                follower.classList.remove('hover');
+            });
         });
-        el.addEventListener('mouseleave', () => {
-            cursor.classList.remove('hover');
-            follower.classList.remove('hover');
-        });
-    });
+    }
 
     // === Navigation Scroll Effect ===
     const nav = document.getElementById('nav');
-
-    window.addEventListener('scroll', () => {
-        if (window.scrollY > 80) {
-            nav.classList.add('scrolled');
-        } else {
-            nav.classList.remove('scrolled');
-        }
-    });
 
     // === Mobile Menu ===
     const hamburger = document.getElementById('nav-hamburger');
@@ -169,18 +174,27 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // --- Autoplay all videos in background ---
+    // Track visibility so we only play videos currently on screen.
+    const visibleBentoItems = new Set();
+    let workSectionVisible = false;
+
+    bentoItems.forEach(item => {
+        const video = item.querySelector('video');
+        if (!video) return;
+        video.muted = true;
+        video.loop = true;
+        video.playsInline = true;
+        video.preload = 'metadata';
+    });
+
     function playAllVisibleVideos() {
-        bentoItems.forEach(item => {
+        if (!workSectionVisible) return;
+
+        visibleBentoItems.forEach(item => {
             const video = item.querySelector('video');
-            if (video) {
-                video.muted = true;
-                video.loop = true;
-                video.playsInline = true;
-                if (!item.classList.contains('filtered-out')) {
-                    video.play().catch(() => {});
-                }
-            }
+            if (!video) return;
+            if (item.classList.contains('filtered-out')) return;
+            video.play().catch(() => {});
         });
     }
 
@@ -197,6 +211,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const workSection = document.getElementById('work');
     const workObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
+            workSectionVisible = entry.isIntersecting;
             if (entry.isIntersecting) {
                 playAllVisibleVideos();
             } else {
@@ -207,18 +222,52 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (workSection) workObserver.observe(workSection);
 
-    // Subtle mouse-driven perspective for desktop
-    if (bentoWrapper && window.matchMedia('(hover: hover)').matches) {
-        bentoWrapper.addEventListener('mousemove', (event) => {
-            const rect = bentoWrapper.getBoundingClientRect();
-            const x = (event.clientX - rect.left) / rect.width;
-            const y = (event.clientY - rect.top) / rect.height;
-            const rotateY = (x - 0.5) * 6;
-            const rotateX = (0.5 - y) * 6;
-            if (bentoGrid) {
-                bentoGrid.style.transform = `rotateX(${8 + rotateX}deg) rotateY(${rotateY}deg) scale(0.93)`;
-            }
+    // Track individual card visibility inside the work section viewport.
+    if (workSection) {
+        const bentoVisibilityObserver = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    visibleBentoItems.add(entry.target);
+                } else {
+                    visibleBentoItems.delete(entry.target);
+                    const video = entry.target.querySelector('video');
+                    if (video) video.pause();
+                }
+            });
+
+            playAllVisibleVideos();
+        }, {
+            root: null,
+            threshold: 0.2,
+            rootMargin: '120px 0px 120px 0px'
         });
+
+        bentoItems.forEach(item => bentoVisibilityObserver.observe(item));
+    }
+
+    // Subtle mouse-driven perspective for desktop.
+    if (bentoWrapper && supportsHover && !performanceMode) {
+        let bentoMotionRaf = null;
+        let lastX = 0;
+        let lastY = 0;
+
+        bentoWrapper.addEventListener('mousemove', (event) => {
+            lastX = event.clientX;
+            lastY = event.clientY;
+
+            if (bentoMotionRaf) return;
+            bentoMotionRaf = requestAnimationFrame(() => {
+                const rect = bentoWrapper.getBoundingClientRect();
+                const x = (lastX - rect.left) / rect.width;
+                const y = (lastY - rect.top) / rect.height;
+                const rotateY = (x - 0.5) * 6;
+                const rotateX = (0.5 - y) * 6;
+                if (bentoGrid) {
+                    bentoGrid.style.transform = `rotateX(${8 + rotateX}deg) rotateY(${rotateY}deg) scale(0.93)`;
+                }
+                bentoMotionRaf = null;
+            });
+        }, { passive: true });
 
         bentoWrapper.addEventListener('mouseleave', () => {
             if (bentoGrid) {
@@ -241,6 +290,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     item.classList.remove('filtered-out');
                 } else {
                     item.classList.add('filtered-out');
+                    const video = item.querySelector('video');
+                    if (video) video.pause();
                 }
             });
 
@@ -446,6 +497,7 @@ document.addEventListener('DOMContentLoaded', () => {
         videoPanel.classList.add('open');
         panelBackdrop.classList.add('active');
         document.body.style.overflow = 'hidden';
+        pauseAllVideos();
         duckWebsiteMusic();
     }
 
@@ -459,6 +511,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const pv = panelVideoWrap.querySelector('video');
         if (pv) pv.pause();
 
+        playAllVisibleVideos();
         restoreWebsiteMusic();
     }
 
@@ -472,16 +525,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Direct listeners for extra reliability (mouse + keyboard)
+    // Add keyboard accessibility without duplicate click handlers.
     bentoItems.forEach((item) => {
         item.setAttribute('tabindex', '0');
         item.setAttribute('role', 'button');
         item.setAttribute('aria-label', `Open preview for ${item.getAttribute('data-title') || 'project'}`);
-
-        item.addEventListener('click', () => {
-            if (item.classList.contains('filtered-out')) return;
-            openPanel(item);
-        });
 
         item.addEventListener('keydown', (e) => {
             if (e.key !== 'Enter' && e.key !== ' ') return;
@@ -517,31 +565,48 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // === Parallax Background Text ===
-    const heroBgText = document.querySelector('.hero-bg-text');
-    if (heroBgText) {
-        window.addEventListener('scroll', () => {
-            heroBgText.style.transform = `translate(-50%, calc(-50% + ${window.scrollY * 0.3}px))`;
-        });
-    }
-
     // === Active Nav on Scroll ===
+    const heroBgText = document.querySelector('.hero-bg-text');
     const sections = document.querySelectorAll('section[id]');
     const navLinks = document.querySelectorAll('.nav-link');
 
-    window.addEventListener('scroll', () => {
+    let scrollRaf = null;
+
+    function updateOnScroll() {
+        const scrollY = window.scrollY;
+
+        if (nav) {
+            nav.classList.toggle('scrolled', scrollY > 80);
+        }
+
+        if (heroBgText && !performanceMode) {
+            heroBgText.style.transform = `translate(-50%, calc(-50% + ${scrollY * 0.2}px))`;
+        }
+
         let current = '';
         sections.forEach(section => {
-            if (window.scrollY >= section.offsetTop - 120) {
+            if (scrollY >= section.offsetTop - 120) {
                 current = section.getAttribute('id');
             }
         });
+
         navLinks.forEach(link => {
             link.style.color = '';
             if (link.getAttribute('href') === '#' + current) {
                 link.style.color = 'var(--accent)';
             }
         });
-    });
+    }
+
+    function onScroll() {
+        if (scrollRaf) return;
+        scrollRaf = requestAnimationFrame(() => {
+            updateOnScroll();
+            scrollRaf = null;
+        });
+    }
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    updateOnScroll();
 
 });

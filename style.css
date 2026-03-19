@@ -94,6 +94,15 @@ em {
     transition: transform 0.3s ease, width 0.3s ease, height 0.3s ease;
 }
 
+body.performance-mode .cursor,
+body.performance-mode .cursor-follower {
+    display: none;
+}
+
+body.performance-mode {
+    cursor: auto;
+}
+
 .cursor.hover { transform: scale(2.5); }
 .cursor-follower.hover {
     width: 60px;
@@ -744,6 +753,11 @@ em {
     transform: rotateX(4deg) rotateY(0deg) scale(0.95);
 }
 
+body.performance-mode .bento-grid,
+body.performance-mode .bento-grid:hover {
+    transform: none;
+}
+
 /* Bento Item */
 .bento-item {
     position: relative;
@@ -760,6 +774,11 @@ em {
     transform: translateZ(30px) scale(1.03);
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
     z-index: 10;
+}
+
+body.performance-mode .bento-item:hover {
+    transform: scale(1.01);
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.35);
 }
 
 /* Size Variants */
@@ -788,6 +807,10 @@ em {
 
 .bento-item:hover .bento-media video {
     transform: scale(1.08);
+}
+
+body.performance-mode .bento-item:hover .bento-media video {
+    transform: scale(1.03);
 }
 
 /* Placeholder (before videos added) */
@@ -1217,6 +1240,10 @@ em {
 .reveal-up.visible {
     opacity: 1;
     transform: translateY(0);
+}
+
+body.performance-mode .reveal-up {
+    transition-duration: 0.35s;
 }
 
 .reveal-up:nth-child(2) { transition-delay: 0.1s; }
