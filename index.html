@@ -29,9 +29,20 @@
             <a href="#hero">AB<span class="accent">.</span></a>
         </div>
         <div class="nav-links" id="nav-links">
+            <button class="music-toggle" id="music-toggle" type="button" aria-label="Toggle music" title="Toggle music">
+                <svg class="music-icon" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M11 5L6 9H3V15H6L11 19V5Z" fill="currentColor"></path>
+                    <path d="M15.5 9.5C16.7 10.7 16.7 13.3 15.5 14.5" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path>
+                    <path d="M18 7C20.8 9.8 20.8 14.2 18 17" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"></path>
+                </svg>
+                <svg class="music-icon-muted" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M11 5L6 9H3V15H6L11 19V5Z" fill="currentColor"></path>
+                    <line x1="4" y1="4" x2="20" y2="20" stroke="currentColor" stroke-width="2" stroke-linecap="round"></line>
+                </svg>
+            </button>
             <a href="#about" class="nav-link">About</a>
-            <a href="#arsenal" class="nav-link">Arsenal</a>
             <a href="#work" class="nav-link">Work</a>
+            <a href="#arsenal" class="nav-link">Arsenal</a>
             <a href="#journey" class="nav-link">Journey</a>
             <a href="#contact" class="nav-link">Contact</a>
         </div>
@@ -45,8 +56,8 @@
     <!-- Mobile Menu -->
     <div class="mobile-menu" id="mobile-menu">
         <a href="#about" class="mobile-link">About</a>
-        <a href="#arsenal" class="mobile-link">Arsenal</a>
         <a href="#work" class="mobile-link">Work</a>
+        <a href="#arsenal" class="mobile-link">Arsenal</a>
         <a href="#journey" class="mobile-link">Journey</a>
         <a href="#contact" class="mobile-link">Contact</a>
     </div>
@@ -72,7 +83,7 @@
                     <span class="stat-label">Years Editing</span>
                 </div>
                 <div class="stat">
-                    <span class="stat-number" data-target="50">0</span><span class="stat-plus">+</span>
+                    <span class="stat-number" data-target="100">0</span><span class="stat-plus">+</span>
                     <span class="stat-label">Projects Delivered</span>
                 </div>
                 <div class="stat">
@@ -138,101 +149,13 @@
         </div>
     </div>
 
-    <!-- Arsenal Section -->
-    <section class="arsenal" id="arsenal">
-        <div class="container">
-            <div class="section-header">
-                <span class="section-number reveal-up">02</span>
-                <h2 class="section-title reveal-up">Arsenal<span class="accent">.</span></h2>
-            </div>
-            <p class="section-subtitle reveal-up">The tools and technologies I wield to bring visions to life.</p>
-            
-            <div class="arsenal-grid">
-                <div class="arsenal-category reveal-up">
-                    <div class="arsenal-category-header">
-                        <span class="arsenal-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="2" y1="7" x2="7" y2="7"/><line x1="2" y1="17" x2="7" y2="17"/><line x1="17" y1="7" x2="22" y2="7"/><line x1="17" y1="17" x2="22" y2="17"/></svg></span>
-                        <h3>Editing Powerhouse</h3>
-                    </div>
-                    <div class="arsenal-items">
-                        <div class="arsenal-item">
-                            <span class="item-name">Adobe Premiere Pro</span>
-                            <div class="item-bar"><div class="item-fill" data-width="95"></div></div>
-                        </div>
-                        <div class="arsenal-item">
-                            <span class="item-name">Adobe After Effects</span>
-                            <div class="item-bar"><div class="item-fill" data-width="90"></div></div>
-                        </div>
-                        <div class="arsenal-item">
-                            <span class="item-name">DaVinci Resolve</span>
-                            <div class="item-bar"><div class="item-fill" data-width="85"></div></div>
-                        </div>
-                        <div class="arsenal-item">
-                            <span class="item-name">CapCut</span>
-                            <div class="item-bar"><div class="item-fill" data-width="95"></div></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="arsenal-category reveal-up">
-                    <div class="arsenal-category-header">
-                        <span class="arsenal-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a4 4 0 0 1 4 4c0 1.95-1.4 3.58-3.25 3.93"/><path d="M12 2a4 4 0 0 0-4 4c0 1.95 1.4 3.58 3.25 3.93"/><rect x="6" y="10" width="12" height="10" rx="2"/><line x1="10" y1="14" x2="10" y2="14.01"/><line x1="14" y1="14" x2="14" y2="14.01"/><path d="M9 18h6"/></svg></span>
-                        <h3>AI Toolkit</h3>
-                    </div>
-                    <div class="arsenal-items">
-                        <div class="arsenal-item">
-                            <span class="item-name">HiggsField</span>
-                            <div class="item-bar"><div class="item-fill" data-width="90"></div></div>
-                        </div>
-                        <div class="arsenal-item">
-                            <span class="item-name">Nano Banana</span>
-                            <div class="item-bar"><div class="item-fill" data-width="85"></div></div>
-                        </div>
-                        <div class="arsenal-item">
-                            <span class="item-name">InVideo AI</span>
-                            <div class="item-bar"><div class="item-fill" data-width="85"></div></div>
-                        </div>
-                        <div class="arsenal-item">
-                            <span class="item-name">CapCut AI Features</span>
-                            <div class="item-bar"><div class="item-fill" data-width="90"></div></div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="arsenal-category reveal-up">
-                    <div class="arsenal-category-header">
-                        <span class="arsenal-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="3" y1="20" x2="21" y2="20"/></svg></span>
-                        <h3>Strategy &amp; Analytics</h3>
-                    </div>
-                    <div class="arsenal-items">
-                        <div class="arsenal-item">
-                            <span class="item-name">Content Strategy</span>
-                            <div class="item-bar"><div class="item-fill" data-width="90"></div></div>
-                        </div>
-                        <div class="arsenal-item">
-                            <span class="item-name">Social Media Trends</span>
-                            <div class="item-bar"><div class="item-fill" data-width="95"></div></div>
-                        </div>
-                        <div class="arsenal-item">
-                            <span class="item-name">Data-Driven Optimization</span>
-                            <div class="item-bar"><div class="item-fill" data-width="85"></div></div>
-                        </div>
-                        <div class="arsenal-item">
-                            <span class="item-name">Audience Analytics</span>
-                            <div class="item-bar"><div class="item-fill" data-width="80"></div></div>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </section>
-
     <!-- ============================================
          WORK — Indaco-style 3D Bento Showcase
          ============================================ -->
     <section class="work" id="work">
         <div class="work-inner">
             <div class="work-header">
-                <span class="section-number reveal-up">03</span>
+                <span class="section-number reveal-up">02</span>
                 <h2 class="section-title reveal-up">Work<span class="accent">.</span></h2>
             </div>
 
@@ -243,6 +166,7 @@
                 <button class="wf-btn" data-filter="ads">Ads</button>
                 <button class="wf-btn" data-filter="shorts">Shorts</button>
                 <button class="wf-btn" data-filter="fastpaced">Fast-Paced</button>
+                <button class="wf-btn" data-filter="talkinghead">Talking-Head</button>
             </div>
 
             <!-- 3D Perspective Bento Grid -->
@@ -353,16 +277,6 @@
                         </div>
                     </div>
 
-                    <div class="bento-item" data-category="ads" data-title="Startup Ad" data-tags="ADVERTISEMENT + STARTUP + STRATEGY">
-                        <div class="bento-media">
-                            <video src="videos/Ads/Startup ad.mp4" muted loop playsinline></video>
-                        </div>
-                        <div class="bento-overlay">
-                            <span class="bento-cat">ADVERTISEMENT + STARTUP + STRATEGY</span>
-                            <h3>Startup Ad</h3>
-                        </div>
-                    </div>
-
                     <!-- === FAST-PACED (3) === -->
 
                     <div class="bento-item" data-category="fastpaced" data-title="Capcut but Cool" data-tags="FAST-PACED + CAPCUT + TRANSITIONS">
@@ -397,16 +311,6 @@
 
                     <!-- === SHORTS (8) === -->
 
-                    <div class="bento-item" data-category="shorts" data-title="AYD is Cool" data-tags="SHORTS + VIRAL + REELS">
-                        <div class="bento-media">
-                            <video src="videos/Shorts/AYD is Cool.mp4" muted loop playsinline></video>
-                        </div>
-                        <div class="bento-overlay">
-                            <span class="bento-cat">SHORTS + VIRAL + REELS</span>
-                            <h3>AYD is Cool</h3>
-                        </div>
-                    </div>
-
                     <div class="bento-item" data-category="shorts" data-title="Cool Cars" data-tags="SHORTS + CARS + CINEMATIC">
                         <div class="bento-media">
                             <video src="videos/Shorts/Cool cars.mp4" muted loop playsinline></video>
@@ -417,16 +321,6 @@
                         </div>
                     </div>
 
-                    <div class="bento-item" data-category="shorts" data-title="Cute Event" data-tags="SHORTS + EVENT + LIFESTYLE">
-                        <div class="bento-media">
-                            <video src="videos/Shorts/Cute Event.mp4" muted loop playsinline></video>
-                        </div>
-                        <div class="bento-overlay">
-                            <span class="bento-cat">SHORTS + EVENT + LIFESTYLE</span>
-                            <h3>Cute Event</h3>
-                        </div>
-                    </div>
-
                     <div class="bento-item" data-category="shorts" data-title="Events are fun" data-tags="SHORTS + EVENT + FUN">
                         <div class="bento-media">
                             <video src="videos/Shorts/Events are fun.mp4" muted loop playsinline></video>
@@ -434,6 +328,16 @@
                         <div class="bento-overlay">
                             <span class="bento-cat">SHORTS + EVENT + FUN</span>
                             <h3>Events are fun</h3>
+                        </div>
+                    </div>
+
+                    <div class="bento-item" data-category="shorts" data-title="Is it Funny!" data-tags="SHORTS + HUMOR + VIRAL">
+                        <div class="bento-media">
+                            <video src="videos/Shorts/Is it Funny!.mp4" muted loop playsinline></video>
+                        </div>
+                        <div class="bento-overlay">
+                            <span class="bento-cat">SHORTS + HUMOR + VIRAL</span>
+                            <h3>Is it Funny!</h3>
                         </div>
                     </div>
 
@@ -477,6 +381,116 @@
                         </div>
                     </div>
 
+                    <!-- === TALKING-HEAD (2) === -->
+
+                    <div class="bento-item" data-category="talkinghead" data-title="Advance Flow" data-tags="TALKING-HEAD + FACECAM + EDUCATIONAL">
+                        <div class="bento-media">
+                            <video src="videos/Talking-Head/Advnace Flow.mp4" muted loop playsinline></video>
+                        </div>
+                        <div class="bento-overlay">
+                            <span class="bento-cat">TALKING-HEAD + FACECAM + EDUCATIONAL</span>
+                            <h3>Advance Flow</h3>
+                        </div>
+                    </div>
+
+                    <div class="bento-item" data-category="talkinghead" data-title="AYD is Cool" data-tags="TALKING-HEAD + VIRAL + REELS">
+                        <div class="bento-media">
+                            <video src="videos/Talking-Head/AYD is Cool.mp4" muted loop playsinline></video>
+                        </div>
+                        <div class="bento-overlay">
+                            <span class="bento-cat">TALKING-HEAD + VIRAL + REELS</span>
+                            <h3>AYD is Cool</h3>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Arsenal Section -->
+    <section class="arsenal" id="arsenal">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-number reveal-up">03</span>
+                <h2 class="section-title reveal-up">Arsenal<span class="accent">.</span></h2>
+            </div>
+            <p class="section-subtitle reveal-up">The tools and technologies I wield to bring visions to life.</p>
+            
+            <div class="arsenal-grid">
+                <div class="arsenal-category reveal-up">
+                    <div class="arsenal-category-header">
+                        <span class="arsenal-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="2.18" ry="2.18"/><line x1="7" y1="2" x2="7" y2="22"/><line x1="17" y1="2" x2="17" y2="22"/><line x1="2" y1="12" x2="22" y2="12"/><line x1="2" y1="7" x2="7" y2="7"/><line x1="2" y1="17" x2="7" y2="17"/><line x1="17" y1="7" x2="22" y2="7"/><line x1="17" y1="17" x2="22" y2="17"/></svg></span>
+                        <h3>Editing Powerhouse</h3>
+                    </div>
+                    <div class="arsenal-items">
+                        <div class="arsenal-item">
+                            <span class="item-name">Adobe Premiere Pro</span>
+                            <div class="item-bar"><div class="item-fill" data-width="95"></div></div>
+                        </div>
+                        <div class="arsenal-item">
+                            <span class="item-name">Adobe After Effects</span>
+                            <div class="item-bar"><div class="item-fill" data-width="90"></div></div>
+                        </div>
+                        <div class="arsenal-item">
+                            <span class="item-name">DaVinci Resolve</span>
+                            <div class="item-bar"><div class="item-fill" data-width="85"></div></div>
+                        </div>
+                        <div class="arsenal-item">
+                            <span class="item-name">CapCut</span>
+                            <div class="item-bar"><div class="item-fill" data-width="95"></div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="arsenal-category reveal-up">
+                    <div class="arsenal-category-header">
+                        <span class="arsenal-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2a4 4 0 0 1 4 4c0 1.95-1.4 3.58-3.25 3.93"/><path d="M12 2a4 4 0 0 0-4 4c0 1.95 1.4 3.58 3.25 3.93"/><rect x="6" y="10" width="12" height="10" rx="2"/><line x1="10" y1="14" x2="10" y2="14.01"/><line x1="14" y1="14" x2="14" y2="14.01"/><path d="M9 18h6"/></svg></span>
+                        <h3>AI Toolkit</h3>
+                    </div>
+                    <div class="arsenal-items">
+                        <div class="arsenal-item">
+                            <span class="item-name">HiggsField</span>
+                            <div class="item-bar"><div class="item-fill" data-width="90"></div></div>
+                        </div>
+                        <div class="arsenal-item">
+                            <span class="item-name">Nano Banana</span>
+                            <div class="item-bar"><div class="item-fill" data-width="85"></div></div>
+                        </div>
+                        <div class="arsenal-item">
+                            <span class="item-name">InVideo AI</span>
+                            <div class="item-bar"><div class="item-fill" data-width="85"></div></div>
+                        </div>
+                        <div class="arsenal-item">
+                            <span class="item-name">CapCut AI Features</span>
+                            <div class="item-bar"><div class="item-fill" data-width="90"></div></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="arsenal-category reveal-up">
+                    <div class="arsenal-category-header">
+                        <span class="arsenal-icon"><svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="3" y1="20" x2="21" y2="20"/></svg></span>
+                        <h3>Strategy &amp; Analytics</h3>
+                    </div>
+                    <div class="arsenal-items">
+                        <div class="arsenal-item">
+                            <span class="item-name">Content Strategy</span>
+                            <div class="item-bar"><div class="item-fill" data-width="90"></div></div>
+                        </div>
+                        <div class="arsenal-item">
+                            <span class="item-name">Social Media Trends</span>
+                            <div class="item-bar"><div class="item-fill" data-width="95"></div></div>
+                        </div>
+                        <div class="arsenal-item">
+                            <span class="item-name">Data-Driven Optimization</span>
+                            <div class="item-bar"><div class="item-fill" data-width="85"></div></div>
+                        </div>
+                        <div class="arsenal-item">
+                            <span class="item-name">Audience Analytics</span>
+                            <div class="item-bar"><div class="item-fill" data-width="80"></div></div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -496,9 +510,13 @@
         <div class="panel-info" id="panel-info">
             <span class="panel-tags"></span>
             <h2 class="panel-title"></h2>
+            <p class="panel-desc">Click to view the full project. Add your video files and they'll play right here.</p>
         </div>
     </div>
     <div class="panel-backdrop" id="panel-backdrop"></div>
+
+    <!-- Preview music: replace src with your track file -->
+    <audio id="preview-music" src="audio/preview-music.mp3" preload="auto" loop autoplay playsinline></audio>
 
     <!-- Journey Section -->
     <section class="journey" id="journey">

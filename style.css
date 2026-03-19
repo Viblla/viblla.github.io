@@ -187,6 +187,49 @@ em {
 
 .nav-links { display: flex; gap: 36px; }
 
+.music-toggle {
+    width: 38px;
+    height: 38px;
+    border-radius: 999px;
+    border: 1px solid var(--accent);
+    background: rgba(0, 0, 0, 0.35);
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: var(--transition-fast);
+    padding: 0;
+}
+
+.music-icon,
+.music-icon-muted {
+    width: 18px;
+    height: 18px;
+    color: var(--accent);
+}
+
+.music-icon-muted {
+    display: none;
+}
+
+.music-toggle:hover {
+    transform: scale(1.06);
+}
+
+.music-toggle.is-muted {
+    border-color: var(--border);
+    background: rgba(0, 0, 0, 0.6);
+}
+
+.music-toggle.is-muted .music-icon {
+    display: none;
+}
+
+.music-toggle.is-muted .music-icon-muted {
+    display: block;
+    color: #8a8a8a;
+}
+
 .nav-link {
     font-size: 14px;
     font-weight: 500;
@@ -561,7 +604,18 @@ em {
     margin-bottom: 28px;
 }
 
-.arsenal-icon {\n    display: flex;\n    align-items: center;\n    justify-content: center;\n    width: 44px;\n    height: 44px;\n    border-radius: 10px;\n    background: rgba(200, 255, 0, 0.08);\n    border: 1px solid rgba(200, 255, 0, 0.15);\n    color: var(--accent);\n    flex-shrink: 0;\n}
+.arsenal-icon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    border-radius: 10px;
+    background: rgba(200, 255, 0, 0.08);
+    border: 1px solid rgba(200, 255, 0, 0.15);
+    color: var(--accent);
+    flex-shrink: 0;
+}
 
 .arsenal-category-header h3 {
     font-family: 'Syne', sans-serif;
@@ -627,6 +681,21 @@ em {
     flex-wrap: wrap;
     gap: 10px;
     margin-bottom: 48px;
+}
+
+.work-drive-note {
+    display: none;
+    margin-top: -24px;
+    margin-bottom: 28px;
+    font-size: 14px;
+    color: var(--text-muted);
+}
+
+.work-drive-note a {
+    color: var(--accent);
+    font-weight: 600;
+    text-decoration: underline;
+    text-underline-offset: 3px;
 }
 
 .wf-btn {
@@ -859,9 +928,10 @@ em {
 }
 
 .panel-video-wrap video {
-    width: 100%;
-    height: 100%;
+    max-width: 100%;
+    max-height: 80vh;
     object-fit: contain;
+    display: block;
 }
 
 .panel-video-wrap .panel-ph {
@@ -1014,7 +1084,7 @@ em {
 
 .contact-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 20px;
 }
 

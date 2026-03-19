@@ -147,6 +147,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const bentoItems = document.querySelectorAll('.bento-item');
     const filterBtns = document.querySelectorAll('.wf-btn');
     const bentoGrid = document.getElementById('bento-grid');
+    const workDriveNote = document.querySelector('.work-drive-note');
 
     // --- Auto-detect video aspect ratio and assign grid size ---
     bentoItems.forEach(item => {
@@ -194,6 +195,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (workSection) workObserver.observe(workSection);
 
+    function toggleDriveNote(filter) {
+        if (!workDriveNote) return;
+        workDriveNote.style.display = filter === 'longform' ? 'block' : 'none';
+    }
+
+    // Default state for initial "All" tab
+    toggleDriveNote('all');
+
     // --- Filter ---
     filterBtns.forEach(btn => {
         btn.addEventListener('click', () => {
@@ -201,6 +210,7 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.classList.add('active');
 
             const filter = btn.getAttribute('data-filter');
+            toggleDriveNote(filter);
 
             bentoItems.forEach(item => {
                 const cat = item.getAttribute('data-category');
@@ -222,20 +232,172 @@ document.addEventListener('DOMContentLoaded', () => {
     const panelClose = document.getElementById('panel-close');
     const panelVideoWrap = document.getElementById('panel-video-wrap');
     const panelInfo = document.getElementById('panel-info');
+    const previewMusic = document.getElementById('preview-music');
+    const musicToggle = document.getElementById('music-toggle');
+
+    let musicFadeRaf = null;
+    const previewMusicTargetVolume = 0.35;
+    let websiteMusicStarted = false;
+    let userMutedMusic = false;
+    const musicStartAtSeconds = 18;
+
+    function fadeMusic(toVolume, duration = 500) {
+        if (!previewMusic) return;
+        const fromVolume = previewMusic.volume;
+        const startTime = performance.now();
+
+        if (musicFadeRaf) {
+            cancelAnimationFrame(musicFadeRaf);
+            musicFadeRaf = null;
+        }
+
+        function step(now) {
+            const elapsed = now - startTime;
+            const progress = Math.min(elapsed / duration, 1);
+            previewMusic.volume = fromVolume + (toVolume - fromVolume) * progress;
+
+            if (progress < 1) {
+                musicFadeRaf = requestAnimationFrame(step);
+            } else {
+                musicFadeRaf = null;
+                if (toVolume === 0) {
+                    previewMusic.pause();
+                }
+            }
+        }
+
+        musicFadeRaf = requestAnimationFrame(step);
+    }
+
+    function syncMusicToggleState() {
+        if (!musicToggle) return;
+        musicToggle.classList.toggle('is-muted', userMutedMusic);
+        musicToggle.setAttribute('aria-pressed', userMutedMusic ? 'true' : 'false');
+        musicToggle.setAttribute('title', userMutedMusic ? 'Unmute music' : 'Mute music');
+    }
+
+    function setMusicStartTime() {
+        if (!previewMusic) return;
+        if (!Number.isFinite(previewMusic.duration) || previewMusic.duration <= 0) return;
+        if (previewMusic.duration > musicStartAtSeconds) {
+            previewMusic.currentTime = musicStartAtSeconds;
+        }
+    }
+
+    function startWebsiteMusic() {
+        if (!previewMusic) return;
+        if (websiteMusicStarted) {
+            if (!userMutedMusic && previewMusic.paused) {
+                previewMusic.play().then(() => {
+                    fadeMusic(previewMusicTargetVolume, 450);
+                }).catch(() => {});
+            }
+            return;
+        }
+        previewMusic.muted = userMutedMusic;
+        previewMusic.volume = 0;
+        setMusicStartTime();
+        const playPromise = previewMusic.play();
+        if (playPromise && typeof playPromise.then === 'function') {
+            playPromise.then(() => {
+                websiteMusicStarted = true;
+                if (!userMutedMusic) {
+                    fadeMusic(previewMusicTargetVolume, 900);
+                }
+            }).catch(() => {
+                websiteMusicStarted = false;
+            });
+        } else {
+            websiteMusicStarted = true;
+            if (!userMutedMusic) {
+                fadeMusic(previewMusicTargetVolume, 900);
+            }
+        }
+    }
+
+    function duckWebsiteMusic() {
+        if (!previewMusic) return;
+        fadeMusic(0, 500);
+    }
+
+    function restoreWebsiteMusic() {
+        if (!previewMusic) return;
+        if (userMutedMusic) return;
+        if (previewMusic.paused) {
+            previewMusic.play().catch(() => {});
+        }
+        previewMusic.muted = false;
+        fadeMusic(previewMusicTargetVolume, 700);
+    }
+
+    function toggleMusicMute() {
+        if (!previewMusic) return;
+
+        userMutedMusic = !userMutedMusic;
+        syncMusicToggleState();
+
+        if (userMutedMusic) {
+            fadeMusic(0, 250);
+        } else {
+            if (previewMusic.paused) {
+                previewMusic.play().then(() => {
+                    previewMusic.muted = false;
+                    fadeMusic(previewMusicTargetVolume, 450);
+                }).catch(() => {
+                    startWebsiteMusic();
+                });
+            } else {
+                previewMusic.muted = false;
+                fadeMusic(previewMusicTargetVolume, 450);
+            }
+        }
+    }
+
+    // Start website background music as soon as page opens (during loader)
+    startWebsiteMusic();
+
+    if (previewMusic) {
+        previewMusic.addEventListener('loadedmetadata', setMusicStartTime);
+        previewMusic.addEventListener('canplay', () => {
+            if (!websiteMusicStarted) {
+                startWebsiteMusic();
+            }
+        });
+    }
+
+    if (musicToggle) {
+        syncMusicToggleState();
+        musicToggle.addEventListener('click', toggleMusicMute);
+    }
 
     function openPanel(item) {
         const title = item.getAttribute('data-title');
         const tags = item.getAttribute('data-tags');
         const video = item.querySelector('video');
+        const driveLink = item.getAttribute('data-drive-link');
 
         // Set info
         panelInfo.querySelector('.panel-tags').textContent = tags;
         panelInfo.querySelector('.panel-title').textContent = title;
+        const panelDesc = panelInfo.querySelector('.panel-desc');
+        if (panelDesc) {
+            panelDesc.innerHTML = 'Click to view the full project. Add your video files and they\'ll play right here.';
+        }
 
         // Set video or placeholder
         panelVideoWrap.innerHTML = '';
 
-        if (video) {
+        if (driveLink) {
+            panelVideoWrap.innerHTML = `
+                <div class="panel-ph">
+                    <span class="ph-play" style="font-size:60px;color:var(--accent);opacity:0.4;">▶</span>
+                    <span style="font-size:13px;color:var(--text-muted);letter-spacing:2px;text-transform:uppercase;">Long-form samples on Drive</span>
+                </div>
+            `;
+            if (panelDesc) {
+                panelDesc.innerHTML = `Visit my Drive for long-form samples: <a href="${driveLink}" target="_blank" rel="noopener noreferrer">Open Google Drive Folder</a>`;
+            }
+        } else if (video) {
             const panelVideo = document.createElement('video');
             panelVideo.src = video.src;
             panelVideo.autoplay = true;
@@ -243,16 +405,7 @@ document.addEventListener('DOMContentLoaded', () => {
             panelVideo.muted = false; // Unmute in panel for full experience
             panelVideo.playsInline = true;
             panelVideo.controls = true;
-            panelVideo.style.width = '100%';
-            panelVideo.style.height = '100%';
-            panelVideo.style.objectFit = 'contain';
             panelVideoWrap.appendChild(panelVideo);
-
-            // Set panel wrapper aspect ratio to match video
-            panelVideo.addEventListener('loadedmetadata', () => {
-                const ratio = panelVideo.videoWidth / panelVideo.videoHeight;
-                panelVideoWrap.style.aspectRatio = ratio.toString();
-            });
         } else {
             panelVideoWrap.innerHTML = `
                 <div class="panel-ph">
@@ -266,6 +419,7 @@ document.addEventListener('DOMContentLoaded', () => {
         videoPanel.classList.add('open');
         panelBackdrop.classList.add('active');
         document.body.style.overflow = 'hidden';
+        duckWebsiteMusic();
     }
 
     function closePanel() {
@@ -276,12 +430,19 @@ document.addEventListener('DOMContentLoaded', () => {
         // Pause panel video
         const pv = panelVideoWrap.querySelector('video');
         if (pv) pv.pause();
+
+        restoreWebsiteMusic();
     }
 
-    // Click bento item → open panel
-    bentoItems.forEach(item => {
-        item.addEventListener('click', () => openPanel(item));
-    });
+    // Click bento item → open panel (delegated to include clicks on video/overlay)
+    if (bentoGrid) {
+        bentoGrid.addEventListener('click', (event) => {
+            const item = event.target.closest('.bento-item');
+            if (!item || !bentoGrid.contains(item)) return;
+            if (item.classList.contains('filtered-out')) return;
+            openPanel(item);
+        });
+    }
 
     // Close panel
     panelClose.addEventListener('click', closePanel);
