@@ -525,11 +525,17 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Add keyboard accessibility without duplicate click handlers.
+    // Direct click handlers on each item for maximum reliability across all click targets
     bentoItems.forEach((item) => {
         item.setAttribute('tabindex', '0');
         item.setAttribute('role', 'button');
         item.setAttribute('aria-label', `Open preview for ${item.getAttribute('data-title') || 'project'}`);
+
+        item.addEventListener('click', (e) => {
+            if (item.classList.contains('filtered-out')) return;
+            e.stopPropagation();
+            openPanel(item);
+        });
 
         item.addEventListener('keydown', (e) => {
             if (e.key !== 'Enter' && e.key !== ' ') return;
