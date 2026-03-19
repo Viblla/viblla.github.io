@@ -147,7 +147,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const bentoItems = document.querySelectorAll('.bento-item');
     const filterBtns = document.querySelectorAll('.wf-btn');
     const bentoGrid = document.getElementById('bento-grid');
-    const workDriveNote = document.querySelector('.work-drive-note');
+    const bentoWrapper = document.querySelector('.bento-wrapper');
 
     // --- Auto-detect video aspect ratio and assign grid size ---
     bentoItems.forEach(item => {
@@ -170,38 +170,62 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     // --- Autoplay all videos in background ---
-    function autoplayAllVideos() {
+    function playAllVisibleVideos() {
         bentoItems.forEach(item => {
             const video = item.querySelector('video');
             if (video) {
                 video.muted = true;
                 video.loop = true;
                 video.playsInline = true;
-                video.play().catch(() => {});
+                if (!item.classList.contains('filtered-out')) {
+                    video.play().catch(() => {});
+                }
             }
         });
     }
 
-    // Autoplay when section becomes visible
+    function pauseAllVideos() {
+        bentoItems.forEach(item => {
+            const video = item.querySelector('video');
+            if (video) {
+                video.pause();
+            }
+        });
+    }
+
+    // Play while section is visible, pause when out of viewport
     const workSection = document.getElementById('work');
     const workObserver = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
-                autoplayAllVideos();
-                workObserver.unobserve(entry.target);
+                playAllVisibleVideos();
+            } else {
+                pauseAllVideos();
             }
         });
-    }, { threshold: 0.1 });
+    }, { threshold: 0.05 });
 
     if (workSection) workObserver.observe(workSection);
 
-    function toggleDriveNote(filter) {
-        if (!workDriveNote) return;
-        workDriveNote.style.display = filter === 'longform' ? 'block' : 'none';
-    }
+    // Subtle mouse-driven perspective for desktop
+    if (bentoWrapper && window.matchMedia('(hover: hover)').matches) {
+        bentoWrapper.addEventListener('mousemove', (event) => {
+            const rect = bentoWrapper.getBoundingClientRect();
+            const x = (event.clientX - rect.left) / rect.width;
+            const y = (event.clientY - rect.top) / rect.height;
+            const rotateY = (x - 0.5) * 6;
+            const rotateX = (0.5 - y) * 6;
+            if (bentoGrid) {
+                bentoGrid.style.transform = `rotateX(${8 + rotateX}deg) rotateY(${rotateY}deg) scale(0.93)`;
+            }
+        });
 
-    // Default state for initial "All" tab
-    toggleDriveNote('all');
+        bentoWrapper.addEventListener('mouseleave', () => {
+            if (bentoGrid) {
+                bentoGrid.style.transform = '';
+            }
+        });
+    }
 
     // --- Filter ---
     filterBtns.forEach(btn => {
@@ -210,7 +234,6 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.classList.add('active');
 
             const filter = btn.getAttribute('data-filter');
-            toggleDriveNote(filter);
 
             bentoItems.forEach(item => {
                 const cat = item.getAttribute('data-category');
@@ -220,6 +243,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     item.classList.add('filtered-out');
                 }
             });
+
+            // Keep ambient playback only for currently visible cards.
+            playAllVisibleVideos();
         });
     });
 
@@ -387,7 +413,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // Set video or placeholder
         panelVideoWrap.innerHTML = '';
 
-        if (driveLink) {
+        if (driveLink && driveLink.trim() !== '') {
             panelVideoWrap.innerHTML = `
                 <div class="panel-ph">
                     <span class="ph-play" style="font-size:60px;color:var(--accent);opacity:0.4;">▶</span>
