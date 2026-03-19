@@ -397,6 +397,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function openPanel(item) {
+        if (!videoPanel || !panelBackdrop || !panelVideoWrap || !panelInfo) return;
         const title = item.getAttribute('data-title');
         const tags = item.getAttribute('data-tags');
         const video = item.querySelector('video');
@@ -449,6 +450,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function closePanel() {
+        if (!videoPanel || !panelBackdrop || !panelVideoWrap) return;
         videoPanel.classList.remove('open');
         panelBackdrop.classList.remove('active');
         document.body.style.overflow = 'auto';
@@ -470,9 +472,32 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // Direct listeners for extra reliability (mouse + keyboard)
+    bentoItems.forEach((item) => {
+        item.setAttribute('tabindex', '0');
+        item.setAttribute('role', 'button');
+        item.setAttribute('aria-label', `Open preview for ${item.getAttribute('data-title') || 'project'}`);
+
+        item.addEventListener('click', () => {
+            if (item.classList.contains('filtered-out')) return;
+            openPanel(item);
+        });
+
+        item.addEventListener('keydown', (e) => {
+            if (e.key !== 'Enter' && e.key !== ' ') return;
+            e.preventDefault();
+            if (item.classList.contains('filtered-out')) return;
+            openPanel(item);
+        });
+    });
+
     // Close panel
-    panelClose.addEventListener('click', closePanel);
-    panelBackdrop.addEventListener('click', closePanel);
+    if (panelClose) {
+        panelClose.addEventListener('click', closePanel);
+    }
+    if (panelBackdrop) {
+        panelBackdrop.addEventListener('click', closePanel);
+    }
 
     // ESC key
     document.addEventListener('keydown', (e) => {
