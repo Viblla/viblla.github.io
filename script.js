@@ -27,23 +27,34 @@ document.addEventListener('DOMContentLoaded', () => {
     const follower = document.getElementById('cursor-follower');
     let mouseX = 0, mouseY = 0;
     let followerX = 0, followerY = 0;
+    let cursorRaf = null;
 
     if (cursor && follower && supportsHover && !performanceMode) {
+        function animateFollower() {
+            followerX += (mouseX - followerX) * 0.18;
+            followerY += (mouseY - followerY) * 0.18;
+            follower.style.left = followerX - 20 + 'px';
+            follower.style.top = followerY - 20 + 'px';
+
+            const dx = Math.abs(mouseX - followerX);
+            const dy = Math.abs(mouseY - followerY);
+            if (dx > 0.2 || dy > 0.2) {
+                cursorRaf = requestAnimationFrame(animateFollower);
+            } else {
+                cursorRaf = null;
+            }
+        }
+
         document.addEventListener('mousemove', (e) => {
             mouseX = e.clientX;
             mouseY = e.clientY;
             cursor.style.left = mouseX - 6 + 'px';
             cursor.style.top = mouseY - 6 + 'px';
-        }, { passive: true });
 
-        function animateFollower() {
-            followerX += (mouseX - followerX) * 0.12;
-            followerY += (mouseY - followerY) * 0.12;
-            follower.style.left = followerX - 20 + 'px';
-            follower.style.top = followerY - 20 + 'px';
-            requestAnimationFrame(animateFollower);
-        }
-        animateFollower();
+            if (!cursorRaf) {
+                cursorRaf = requestAnimationFrame(animateFollower);
+            }
+        }, { passive: true });
     }
 
     // Cursor hover targets
@@ -152,13 +163,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const bentoItems = document.querySelectorAll('.bento-item');
     const filterBtns = document.querySelectorAll('.wf-btn');
     const bentoGrid = document.getElementById('bento-grid');
-    const bentoWrapper = document.querySelector('.bento-wrapper');
+    const longformCta = document.getElementById('longform-cta');
 
-    // DEBUG: Log all bento items found and verify they're clickable
-    console.log(`✓ Found ${bentoItems.length} bento items`);
-    bentoItems.forEach((item, idx) => {
-        console.log(`  ${idx + 1}. ${item.getAttribute('data-title')} (${item.getAttribute('data-category')})`);
-    });
+    const MAX_SIMULTANEOUS_VIDEOS = performanceMode ? 2 : 4;
 
     // --- Auto-detect video aspect ratio and assign grid size ---
     bentoItems.forEach(item => {
@@ -193,14 +200,24 @@ document.addEventListener('DOMContentLoaded', () => {
         video.preload = 'metadata';
     });
 
-    function playAllVisibleVideos() {
-        if (!workSectionVisible) return;
+    let isPanelOpen = false;
 
-        visibleBentoItems.forEach(item => {
+    function playAllVisibleVideos() {
+        if (!workSectionVisible || isPanelOpen) return;
+
+        const candidates = Array.from(visibleBentoItems)
+            .filter(item => !item.classList.contains('filtered-out'))
+            .sort((a, b) => a.getBoundingClientRect().top - b.getBoundingClientRect().top);
+
+        candidates.forEach((item, index) => {
             const video = item.querySelector('video');
             if (!video) return;
-            if (item.classList.contains('filtered-out')) return;
-            video.play().catch(() => {});
+
+            if (index < MAX_SIMULTANEOUS_VIDEOS) {
+                video.play().catch(() => {});
+            } else {
+                video.pause();
+            }
         });
     }
 
@@ -244,42 +261,11 @@ document.addEventListener('DOMContentLoaded', () => {
             playAllVisibleVideos();
         }, {
             root: null,
-            threshold: 0.2,
-            rootMargin: '120px 0px 120px 0px'
+            threshold: 0.3,
+            rootMargin: '40px 0px 40px 0px'
         });
 
         bentoItems.forEach(item => bentoVisibilityObserver.observe(item));
-    }
-
-    // Subtle mouse-driven perspective for desktop.
-    if (bentoWrapper && supportsHover && !performanceMode) {
-        let bentoMotionRaf = null;
-        let lastX = 0;
-        let lastY = 0;
-
-        bentoWrapper.addEventListener('mousemove', (event) => {
-            lastX = event.clientX;
-            lastY = event.clientY;
-
-            if (bentoMotionRaf) return;
-            bentoMotionRaf = requestAnimationFrame(() => {
-                const rect = bentoWrapper.getBoundingClientRect();
-                const x = (lastX - rect.left) / rect.width;
-                const y = (lastY - rect.top) / rect.height;
-                const rotateY = (x - 0.5) * 6;
-                const rotateX = (0.5 - y) * 6;
-                if (bentoGrid) {
-                    bentoGrid.style.transform = `rotateX(${8 + rotateX}deg) rotateY(${rotateY}deg) scale(0.93)`;
-                }
-                bentoMotionRaf = null;
-            });
-        }, { passive: true });
-
-        bentoWrapper.addEventListener('mouseleave', () => {
-            if (bentoGrid) {
-                bentoGrid.style.transform = '';
-            }
-        });
     }
 
     // --- Filter ---
@@ -289,6 +275,20 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.classList.add('active');
 
             const filter = btn.getAttribute('data-filter');
+
+            if (longformCta) {
+                longformCta.classList.toggle('active', filter === 'longform');
+            }
+
+            if (filter === 'longform') {
+                bentoItems.forEach(item => {
+                    item.classList.add('filtered-out');
+                    const video = item.querySelector('video');
+                    if (video) video.pause();
+                });
+                closePanel();
+                return;
+            }
 
             bentoItems.forEach(item => {
                 const cat = item.getAttribute('data-category');
@@ -463,10 +463,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const video = item.querySelector('video');
         const driveLink = item.getAttribute('data-drive-link');
 
-        console.log(`openPanel() called for: ${title}`);
-        console.log(`  Video src: ${video ? video.src : 'NOT FOUND'}`);
-        console.log(`  Drive link: ${driveLink || 'NONE'}`);
-
         // Set info
         panelInfo.querySelector('.panel-tags').textContent = tags;
         panelInfo.querySelector('.panel-title').textContent = title;
@@ -507,16 +503,17 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         // Open
+        isPanelOpen = true;
         videoPanel.classList.add('open');
         panelBackdrop.classList.add('active');
         document.body.style.overflow = 'hidden';
         pauseAllVideos();
         duckWebsiteMusic();
-        console.log(`  ✓ Panel opened`);
     }
 
     function closePanel() {
         if (!videoPanel || !panelBackdrop || !panelVideoWrap) return;
+        isPanelOpen = false;
         videoPanel.classList.remove('open');
         panelBackdrop.classList.remove('active');
         document.body.style.overflow = 'auto';
@@ -539,26 +536,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Direct click handlers on each item for maximum reliability across all click targets
+    // Keyboard accessibility for each card.
     bentoItems.forEach((item) => {
         item.setAttribute('tabindex', '0');
         item.setAttribute('role', 'button');
         item.setAttribute('aria-label', `Open preview for ${item.getAttribute('data-title') || 'project'}`);
-
-        item.addEventListener('click', (e) => {
-            const title = item.getAttribute('data-title');
-            const isFiltered = item.classList.contains('filtered-out');
-            console.log(`Click on: ${title}, Filtered: ${isFiltered}`);
-            
-            if (isFiltered) {
-                console.warn(`  → Skipped (filtered out)`);
-                return;
-            }
-            
-            e.stopPropagation();
-            console.log(`  → Opening panel for: ${title}`);
-            openPanel(item);
-        });
 
         item.addEventListener('keydown', (e) => {
             if (e.key !== 'Enter' && e.key !== ' ') return;

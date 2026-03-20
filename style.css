@@ -729,11 +729,77 @@ body.performance-mode {
     border-color: var(--accent);
 }
 
-/* Bento Wrapper — Perspective Container */
+.longform-cta {
+    display: none;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 24px;
+    border: 1px solid var(--border);
+    border-radius: 20px;
+    padding: 24px;
+    margin-bottom: 28px;
+    background: linear-gradient(140deg, rgba(255, 255, 255, 0.02), rgba(255, 255, 255, 0.01));
+}
+
+.longform-cta.active {
+    display: flex;
+}
+
+.longform-copy {
+    max-width: 760px;
+}
+
+.longform-kicker {
+    display: inline-block;
+    margin-bottom: 10px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent);
+}
+
+.longform-cta h3 {
+    margin: 0 0 8px;
+    font-family: 'Syne', sans-serif;
+    font-size: 24px;
+    letter-spacing: -0.4px;
+    color: var(--text);
+}
+
+.longform-cta p {
+    margin: 0;
+    color: var(--text-muted);
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+.longform-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 22px;
+    border-radius: 999px;
+    border: 1px solid var(--accent);
+    background: var(--accent);
+    color: var(--bg);
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+
+.longform-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 30px rgba(0, 255, 170, 0.25);
+}
+
+/* Bento Wrapper */
 .bento-wrapper {
-    perspective: 1200px;
-    perspective-origin: 50% 40%;
-    transform-style: preserve-3d;
+    perspective: none;
 }
 
 /* The Grid */
@@ -741,20 +807,8 @@ body.performance-mode {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     grid-auto-rows: 220px;
-    grid-auto-flow: dense;
+    grid-auto-flow: row;
     gap: 14px;
-    transform: rotateX(12deg) rotateY(0deg) scale(0.92);
-    transform-style: preserve-3d;
-    transition: transform 0.8s cubic-bezier(0.25, 0.46, 0.45, 0.94);
-    will-change: transform;
-}
-
-.bento-grid:hover {
-    transform: rotateX(4deg) rotateY(0deg) scale(0.95);
-}
-
-body.performance-mode .bento-grid,
-body.performance-mode .bento-grid:hover {
     transform: none;
 }
 
@@ -766,13 +820,12 @@ body.performance-mode .bento-grid:hover {
     cursor: pointer;
     transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94),
                 box-shadow 0.5s ease;
-    transform-style: preserve-3d;
     isolation: isolate;
     pointer-events: auto;
 }
 
 .bento-item:hover {
-    transform: translateZ(30px) scale(1.03);
+    transform: scale(1.02);
     box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
     z-index: 10;
 }
@@ -1276,11 +1329,7 @@ body.performance-mode .reveal-up {
     .bento-grid {
         grid-template-columns: repeat(2, 1fr);
         grid-auto-rows: 180px;
-        transform: rotateX(6deg) scale(0.95);
-    }
-
-    .bento-grid:hover {
-        transform: rotateX(2deg) scale(0.97);
+        transform: none;
     }
 
     .video-panel {
@@ -1305,6 +1354,26 @@ body.performance-mode .reveal-up {
 
     .work-inner { padding: 0 16px; }
 
+    .longform-cta {
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 18px;
+        gap: 14px;
+        margin-bottom: 20px;
+    }
+
+    .longform-cta h3 {
+        font-size: 18px;
+    }
+
+    .longform-cta p {
+        font-size: 14px;
+    }
+
+    .longform-btn {
+        width: 100%;
+    }
+
     .section-header { margin-bottom: 40px; }
     .section-subtitle { margin-bottom: 40px; }
     .arsenal-grid { grid-template-columns: 1fr; }
@@ -1313,11 +1382,7 @@ body.performance-mode .reveal-up {
         grid-template-columns: repeat(2, 1fr);
         grid-auto-rows: 150px;
         gap: 10px;
-        transform: rotateX(4deg) scale(0.96);
-    }
-
-    .bento-grid:hover {
-        transform: rotateX(1deg) scale(0.98);
+        transform: none;
     }
 
     .bento-overlay {
